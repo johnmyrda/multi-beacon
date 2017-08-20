@@ -11,10 +11,9 @@
 #include "patterns/RandomColors.h"
 #include "patterns/Sos.h"
 #include "patterns/Usa.h"
+#include "patterns/Lightning.h"
 #include <FastLED.h>
 #include <TimerOne.h>
-
-#define DEBUG
 
 #define POWER_LED_PIN A3
 #define KNOB_PIN A0
@@ -23,8 +22,6 @@
 #define LED_PIN 4
 #define NUM_LEDS_PER_BEACON 24
 #define NUM_BEACONS 6
-#define DICK_LENGTH 24
-//#define NUM_LEDS (DICK_LENGTH)
 #define NUM_LEDS (NUM_LEDS_PER_BEACON * NUM_BEACONS)
 #define CHIPSET     WS2811
 #define COLOR_ORDER GRB
@@ -53,18 +50,34 @@ void setup(){
     Serial.begin(115200);
   #endif
   FastLED.addLeds<CHIPSET, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalSMD5050);
-  // pattern_master.add(new Usa(16));
-  // pattern_master.add(new ColorBars(CRGB::Blue, CRGB::Black, 24));
-  // pattern_master.add(new LarsonScanner(CRGB::Red, CRGB::Black));
-  // pattern_master.add(new RandomColors(4));
-  // pattern_master.add(new Rainbow(4));
-  // pattern_master.add(new Sos());
-  // pattern_master.add(new Gradient(CRGB::Green));
-  pattern_master.add(new BeaconPulse());
+
+  // Pattern * usa = new Usa(24);
+  // usa->set_fps(45);
+  // pattern_master.add(usa);
+  //
+  // Pattern * colorbars = new ColorBars(CRGB::Blue, CRGB::Black, 24);
+  // pattern_master.add(colorbars);
+  //
+  // Pattern * larson = new LarsonScanner(CRGB::Red, CRGB::Black);
+  // larson->set_fps(80);
+  // pattern_master.add(larson);
+
+  // Pattern * randomcolors = new RandomColors(4);
+  // randomcolors->set_fps(15);
+  // pattern_master.add(randomcolors);
   pattern_master.add(new BeaconPulse2());
+  pattern_master.add(new Rainbow(1));
+  //pattern_master.add(new Sos());
+  pattern_master.add(new Gradient(CRGB::Green));
+
+  Pattern * bp = new BeaconPulse();
+  bp->set_fps(20);
+  pattern_master.add(bp);
+
   pattern_master.add(new BeaconScanner());
-  pattern_master.set_fps(45);
-  pattern_master.pattern_duration = 60000;
+  pattern_master.add(new Lightning(CRGB::White, 24));
+  pattern_master.set_fps(30);
+  pattern_master.pattern_duration = 12000;
 
   // Set up switch which is used to turn leds all the way off
   pinMode(SWITCH_PIN, INPUT_PULLUP);
