@@ -1,17 +1,15 @@
 #include "Arduino.h"
 #include "PatternController.h"
+#include "patterns/AlternatingColors.h"
+#include "patterns/BeaconPulse2.h"
+#include "patterns/BeaconPulse.h"
+#include "patterns/BeaconScanner.h"
 #include "patterns/ColorBars.h"
-#include "patterns/Generic.h"
 #include "patterns/Gradient.h"
 #include "patterns/LarsonScanner.h"
-#include "patterns/BeaconPulse.h"
-#include "patterns/BeaconPulse2.h"
-#include "patterns/BeaconScanner.h"
+#include "patterns/Lightning.h"
 #include "patterns/Rainbow.h"
 #include "patterns/RandomColors.h"
-#include "patterns/Sos.h"
-#include "patterns/Usa.h"
-#include "patterns/Lightning.h"
 #include <FastLED.h>
 #include <TimerOne.h>
 
@@ -29,6 +27,17 @@
 CRGB leds[NUM_LEDS];
 
 PatternController pattern_master = PatternController(leds, NUM_LEDS);
+
+AlternatingColors alt = AlternatingColors(24);
+ColorBars cb = ColorBars(CRGB::Blue, CRGB::Black, 24);
+LarsonScanner larson = LarsonScanner(CRGB::Red, CRGB::Black);
+RandomColors randomcolors = RandomColors(4);
+BeaconPulse2 bp2 = BeaconPulse2();
+Rainbow rainbow = Rainbow(1);
+Gradient grad = Gradient();
+BeaconPulse bp = BeaconPulse();
+BeaconScanner bs = BeaconScanner();
+Lightning lightning = Lightning(CRGB::White, 24);
 
 // These values are used in updateBrightness().
 uint8_t brightnesses[] = {7, 20, 35, 60, 80, 120, 255};
@@ -51,33 +60,27 @@ void setup(){
   #endif
   FastLED.addLeds<CHIPSET, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalSMD5050);
 
-  // Pattern * usa = new Usa(24);
-  // usa->set_fps(45);
-  // pattern_master.add(usa);
-  //
-  // Pattern * colorbars = new ColorBars(CRGB::Blue, CRGB::Black, 24);
-  // pattern_master.add(colorbars);
-  //
-  // Pattern * larson = new LarsonScanner(CRGB::Red, CRGB::Black);
-  // larson->set_fps(80);
-  // pattern_master.add(larson);
+  pattern_master.add(&alt);
+  pattern_master.add(&cb);
 
-  // Pattern * randomcolors = new RandomColors(4);
-  // randomcolors->set_fps(15);
-  // pattern_master.add(randomcolors);
-  pattern_master.add(new BeaconPulse2());
-  pattern_master.add(new Rainbow(1));
+  larson.set_fps(80);
+  pattern_master.add(&larson);
+
+  randomcolors.set_fps(15);
+  pattern_master.add(&randomcolors);
+
+  pattern_master.add(&bp2);
   //pattern_master.add(new Sos());
-  pattern_master.add(new Gradient(CRGB::Green));
+  pattern_master.add(&grad);
 
-  Pattern * bp = new BeaconPulse();
-  bp->set_fps(20);
-  pattern_master.add(bp);
+  bp.set_fps(20);
+  pattern_master.add(&bp);
+  pattern_master.add(&rainbow);
 
-  pattern_master.add(new BeaconScanner());
-  pattern_master.add(new Lightning(CRGB::White, 24));
+  pattern_master.add(&bs);
+  pattern_master.add(&lightning);
   pattern_master.set_fps(30);
-  pattern_master.pattern_duration = 12000;
+  pattern_master.pattern_duration = 15000;
 
   // Set up switch which is used to turn leds all the way off
   pinMode(SWITCH_PIN, INPUT_PULLUP);
